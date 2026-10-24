@@ -1,0 +1,1294 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wildlife Ecology - Interactive MOOC Course</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        emerald: {
+                            50: '#ecfdf5',
+                            100: '#d1fae5',
+                            200: '#a7f3d0',
+                            300: '#6ee7b7',
+                            400: '#34d399',
+                            500: '#10b981',
+                            600: '#059669',
+                            700: '#047857',
+                            800: '#065f46',
+                            900: '#064e3b',
+                            950: '#022c22',
+                        },
+                        slate: {
+                            850: '#131e32',
+                            900: '#0f172a',
+                            950: '#020617',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 3px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #334155;
+        }
+        /* Flip Card Animation */
+        .perspective-1000 { perspective: 1000px; }
+        .transform-style-3d { transform-style: preserve-3d; }
+        .backface-hidden { backface-visibility: hidden; }
+        .rotate-y-180 { transform: rotateY(180deg); }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col md:flex-row antialiased overflow-x-hidden">
+
+    <!-- Mobile Header -->
+    <header class="md:hidden flex items-center justify-between p-4 bg-slate-900 border-b border-slate-800 sticky top-0 z-50">
+        <div class="flex items-center space-x-2">
+            <i data-lucide="trees" class="w-6 h-6 text-emerald-400"></i>
+            <span class="font-bold text-lg tracking-tight text-white">Ecology MOOC</span>
+        </div>
+        <button id="mobile-menu-btn" class="p-2 rounded-lg bg-slate-800 text-slate-300 hover:text-white">
+            <i data-lucide="menu" class="w-6 h-6"></i>
+        </button>
+    </header>
+
+    <!-- Sidebar Navigation -->
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-72 bg-slate-900 border-r border-slate-800 flex flex-col transition-transform duration-300 -translate-x-full md:translate-x-0 md:static md:h-screen">
+        <!-- Logo & Title -->
+        <div class="p-5 border-b border-slate-800 flex items-center space-x-3">
+            <div class="p-2.5 bg-emerald-950 border border-emerald-500/30 rounded-xl text-emerald-400 shadow-lg shadow-emerald-950/50">
+                <i data-lucide="trees" class="w-6 h-6"></i>
+            </div>
+            <div>
+                <h1 class="font-bold text-base text-slate-100 leading-tight">Wildlife Ecology</h1>
+                <p class="text-xs text-emerald-400 font-medium">12-Week Assignment Course</p>
+            </div>
+        </div>
+
+        <!-- Overall Progress Box -->
+        <div class="p-4 mx-4 my-3 bg-slate-950/60 border border-slate-800/80 rounded-xl">
+            <div class="flex justify-between items-center text-xs font-semibold mb-1.5">
+                <span class="text-slate-400">Course Completion</span>
+                <span id="overall-progress-text" class="text-emerald-400">0%</span>
+            </div>
+            <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                <div id="overall-progress-bar" class="bg-gradient-to-r from-emerald-500 to-teal-400 h-full w-0 transition-all duration-500"></div>
+            </div>
+            <div class="mt-2 flex justify-between text-[11px] text-slate-500">
+                <span id="completed-weeks-count">0/12 Modules Completed</span>
+                <span id="avg-score-text">Avg: --</span>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="px-3 py-1 space-y-1">
+            <button onclick="switchTab('dashboard')" id="nav-dashboard" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors bg-emerald-600/10 text-emerald-400 border border-emerald-500/20">
+                <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+                <span>Course Dashboard</span>
+            </button>
+            <button onclick="switchTab('flashcards')" id="nav-flashcards" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:bg-slate-800/60 hover:text-slate-200 transition-colors">
+                <i data-lucide="layers" class="w-4 h-4"></i>
+                <span>Master Flashcards</span>
+            </button>
+            <button onclick="switchTab('exam')" id="nav-exam" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:bg-slate-800/60 hover:text-slate-200 transition-colors">
+                <i data-lucide="award" class="w-4 h-4"></i>
+                <span>Exam Simulator</span>
+            </button>
+        </div>
+
+        <div class="px-4 py-2 text-[11px] font-bold uppercase tracking-wider text-slate-500 mt-2">
+            Weekly Modules
+        </div>
+
+        <!-- Module List -->
+        <nav id="module-nav" class="flex-1 overflow-y-auto px-3 space-y-1 custom-scrollbar pb-6">
+            <!-- Dynamic JS injection of 12 modules -->
+        </nav>
+
+        <!-- Sidebar Footer -->
+        <div class="p-3 border-t border-slate-800 text-center">
+            <button onclick="resetAllProgress()" class="text-xs text-slate-500 hover:text-rose-400 flex items-center justify-center space-x-1.5 w-full py-1.5 transition-colors">
+                <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+                <span>Reset Course Progress</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 flex flex-col h-screen overflow-hidden bg-slate-950">
+
+        <!-- Top Status Bar (Desktop) -->
+        <header class="hidden md:flex items-center justify-between px-8 py-4 bg-slate-900/50 border-b border-slate-800/80 backdrop-blur-md">
+            <div id="top-title" class="flex items-center space-x-3">
+                <span class="text-xs px-2.5 py-1 bg-emerald-950 text-emerald-400 border border-emerald-800/50 rounded-full font-semibold">Self-Paced Learning</span>
+                <h2 class="text-lg font-bold text-slate-100">Wildlife Ecology Examination Prep</h2>
+            </div>
+            <div class="flex items-center space-x-4 text-xs text-slate-400">
+                <div class="flex items-center space-x-1.5">
+                    <i data-lucide="book-open" class="w-4 h-4 text-emerald-400"></i>
+                    <span>120 Exam Questions</span>
+                </div>
+                <span class="text-slate-700">|</span>
+                <div class="flex items-center space-x-1.5">
+                    <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-400"></i>
+                    <span id="top-mastery-count">0/12 Modules Mastered</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Dynamic Content Panel -->
+        <div id="content-container" class="flex-1 overflow-y-auto p-4 md:p-8 custom-scrollbar">
+            
+            <!-- Dashboard View -->
+            <div id="view-dashboard" class="space-y-6 max-w-6xl mx-auto">
+                <!-- Welcome Banner -->
+                <div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-emerald-950 via-slate-900 to-slate-900 border border-emerald-500/20 p-6 md:p-8 shadow-xl">
+                    <div class="relative z-10 space-y-3 max-w-2xl">
+                        <div class="inline-flex items-center space-x-2 px-3 py-1 bg-emerald-500/10 border border-emerald-500/30 rounded-full text-xs font-semibold text-emerald-400">
+                            <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+                            <span>Exam-Ready Course Content</span>
+                        </div>
+                        <h1 class="text-2xl md:text-3xl font-extrabold text-white tracking-tight">Master Wildlife Ecology Concepts</h1>
+                        <p class="text-slate-300 text-sm leading-relaxed">
+                            Complete all 12 week assignment modules, test your knowledge with instant-feedback quizzes, review key terminology with interactive flashcards, and simulate the final exam.
+                        </p>
+                        <div class="pt-2 flex flex-wrap gap-3">
+                            <button onclick="startNextUncompletedModule()" class="px-5 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold text-sm rounded-xl transition-all shadow-lg shadow-emerald-500/20 flex items-center space-x-2">
+                                <i data-lucide="play" class="w-4 h-4 fill-current"></i>
+                                <span>Continue Learning</span>
+                            </button>
+                            <button onclick="switchTab('exam')" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-sm rounded-xl transition-colors border border-slate-700 flex items-center space-x-2">
+                                <i data-lucide="file-text" class="w-4 h-4"></i>
+                                <span>Take Mock Exam</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stats Overview Grid -->
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="bg-slate-900/60 border border-slate-800 p-4 rounded-xl">
+                        <div class="flex items-center justify-between text-slate-400 mb-2">
+                            <span class="text-xs font-medium">Completed Modules</span>
+                            <i data-lucide="check-circle" class="w-4 h-4 text-emerald-400"></i>
+                        </div>
+                        <div id="stat-completed" class="text-2xl font-bold text-white">0/12</div>
+                        <p class="text-[11px] text-slate-500 mt-1">Modules with score ≥ 70%</p>
+                    </div>
+
+                    <div class="bg-slate-900/60 border border-slate-800 p-4 rounded-xl">
+                        <div class="flex items-center justify-between text-slate-400 mb-2">
+                            <span class="text-xs font-medium">Questions Attempted</span>
+                            <i data-lucide="help-circle" class="w-4 h-4 text-teal-400"></i>
+                        </div>
+                        <div id="stat-questions" class="text-2xl font-bold text-white">0</div>
+                        <p class="text-[11px] text-slate-500 mt-1">Out of 120 available questions</p>
+                    </div>
+
+                    <div class="bg-slate-900/60 border border-slate-800 p-4 rounded-xl">
+                        <div class="flex items-center justify-between text-slate-400 mb-2">
+                            <span class="text-xs font-medium">Average Accuracy</span>
+                            <i data-lucide="target" class="w-4 h-4 text-emerald-400"></i>
+                        </div>
+                        <div id="stat-accuracy" class="text-2xl font-bold text-white">0%</div>
+                        <p class="text-[11px] text-slate-500 mt-1">Across all practice quizzes</p>
+                    </div>
+
+                    <div class="bg-slate-900/60 border border-slate-800 p-4 rounded-xl">
+                        <div class="flex items-center justify-between text-slate-400 mb-2">
+                            <span class="text-xs font-medium">Flashcard Mastery</span>
+                            <i data-lucide="zap" class="w-4 h-4 text-amber-400"></i>
+                        </div>
+                        <div id="stat-flashcards" class="text-2xl font-bold text-white">0</div>
+                        <p class="text-[11px] text-slate-500 mt-1">Key ecological terms mastered</p>
+                    </div>
+                </div>
+
+                <!-- 12 Modules Dashboard Grid -->
+                <div>
+                    <h3 class="text-base font-bold text-white mb-4 flex items-center space-x-2">
+                        <i data-lucide="book" class="w-4 h-4 text-emerald-400"></i>
+                        <span>Course Modules</span>
+                    </h3>
+                    <div id="modules-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <!-- Dynamically populated via JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quiz Practice View -->
+            <div id="view-quiz" class="hidden max-w-4xl mx-auto space-y-6">
+                <!-- Header Card -->
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 bg-slate-900 border border-slate-800 rounded-2xl">
+                    <div class="space-y-1">
+                        <div class="flex items-center space-x-2">
+                            <span id="quiz-week-badge" class="px-2.5 py-0.5 text-xs font-bold bg-emerald-950 text-emerald-400 border border-emerald-800 rounded-md">Week 1</span>
+                            <span class="text-xs text-slate-400">Assignment Practice</span>
+                        </div>
+                        <h2 id="quiz-title" class="text-xl font-bold text-white">Module Title</h2>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <button onclick="setQuizMode('practice')" id="btn-mode-practice" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-emerald-600 text-slate-950 border border-emerald-500">Practice Quiz</button>
+                        <button onclick="setQuizMode('flashcards')" id="btn-mode-cards" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-slate-800 text-slate-300 hover:text-white border border-slate-700">Study Flashcards</button>
+                    </div>
+                </div>
+
+                <!-- Mode 1: Practice Questions Container -->
+                <div id="quiz-questions-mode" class="space-y-6">
+                    <!-- Dynamic Question List injected via JS -->
+                </div>
+
+                <!-- Mode 2: Week Specific Flashcards -->
+                <div id="quiz-flashcards-mode" class="hidden space-y-6">
+                    <div class="text-center py-4">
+                        <p class="text-sm text-slate-400">Click card to reveal answer & explanation. Mark as mastered when confident.</p>
+                    </div>
+                    <div id="week-flashcard-container" class="flex flex-col items-center justify-center min-h-[320px]">
+                        <!-- Dynamic card -->
+                    </div>
+                </div>
+
+                <!-- Footer Action Buttons -->
+                <div class="flex justify-between items-center pt-4 border-t border-slate-800">
+                    <button id="btn-prev-week" onclick="navigateWeek(-1)" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-slate-300 rounded-xl text-sm font-medium border border-slate-800 flex items-center space-x-2">
+                        <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                        <span>Previous Week</span>
+                    </button>
+                    <button id="btn-next-week" onclick="navigateWeek(1)" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-slate-950 rounded-xl text-sm font-bold flex items-center space-x-2">
+                        <span>Next Week</span>
+                        <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Master Flashcards View -->
+            <div id="view-flashcards" class="hidden max-w-3xl mx-auto space-y-6">
+                <div class="text-center space-y-2">
+                    <h2 class="text-2xl font-bold text-white">Master Key Terminology</h2>
+                    <p class="text-slate-400 text-sm">Flip through key definitions and questions across all 12 assignment weeks.</p>
+                </div>
+
+                <!-- Filter / Stats -->
+                <div class="flex justify-between items-center px-4 py-3 bg-slate-900 border border-slate-800 rounded-xl text-xs">
+                    <div class="flex items-center space-x-2">
+                        <span class="text-slate-400">Card Progress:</span>
+                        <span id="card-index-indicator" class="font-bold text-emerald-400">1 / 120</span>
+                    </div>
+                    <button onclick="toggleMasterCurrentCard()" id="btn-master-card" class="px-3 py-1 bg-slate-800 hover:bg-slate-700 text-amber-400 border border-amber-500/30 rounded-lg flex items-center space-x-1.5 transition-colors">
+                        <i data-lucide="star" class="w-3.5 h-3.5"></i>
+                        <span id="master-btn-text">Mark as Mastered</span>
+                    </button>
+                </div>
+
+                <!-- Flashcard Display -->
+                <div class="perspective-1000 w-full min-h-[320px] cursor-pointer" onclick="flipMainCard()">
+                    <div id="main-flashcard" class="relative w-full h-full min-h-[320px] transition-transform duration-500 transform-style-3d bg-slate-900 border border-slate-800 rounded-2xl p-8 flex flex-col justify-between shadow-xl">
+                        <!-- Front Face -->
+                        <div class="absolute inset-0 backface-hidden p-8 flex flex-col justify-between bg-slate-900 rounded-2xl border border-slate-800">
+                            <div class="flex justify-between items-center text-xs">
+                                <span id="card-week-badge" class="px-2.5 py-1 bg-emerald-950 text-emerald-400 border border-emerald-800/60 rounded-md font-semibold">Week 1</span>
+                                <span class="text-slate-500 flex items-center gap-1"><i data-lucide="rotate-cw" class="w-3 h-3"></i> Click to flip</span>
+                            </div>
+                            <div class="my-auto text-center px-4">
+                                <h3 id="card-question-text" class="text-lg md:text-xl font-semibold text-slate-100 leading-relaxed">
+                                    Question Text Loading...
+                                </h3>
+                            </div>
+                            <div class="text-center text-xs text-slate-500">
+                                Question Card
+                            </div>
+                        </div>
+
+                        <!-- Back Face -->
+                        <div class="absolute inset-0 backface-hidden rotate-y-180 p-8 flex flex-col justify-between bg-slate-850 rounded-2xl border border-emerald-500/30">
+                            <div class="flex justify-between items-center text-xs">
+                                <span class="text-emerald-400 font-semibold flex items-center gap-1"><i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i> Answer & Concept</span>
+                                <span class="text-slate-500 flex items-center gap-1"><i data-lucide="rotate-cw" class="w-3 h-3"></i> Click to flip</span>
+                            </div>
+                            <div class="my-auto space-y-4 px-2">
+                                <div id="card-answer-text" class="text-lg font-bold text-emerald-300 text-center">
+                                    Correct Answer
+                                </div>
+                                <p id="card-explanation-text" class="text-xs text-slate-300 leading-relaxed bg-slate-900/80 p-3 rounded-lg border border-slate-800">
+                                    Explanation text...
+                                </p>
+                            </div>
+                            <div class="text-center text-xs text-slate-500">
+                                Solution Card
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navigation Controls -->
+                <div class="flex justify-between items-center gap-4">
+                    <button onclick="prevMainCard()" class="flex-1 py-3 bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-200 font-semibold text-sm rounded-xl transition-colors flex justify-center items-center space-x-2">
+                        <i data-lucide="chevron-left" class="w-4 h-4"></i>
+                        <span>Previous</span>
+                    </button>
+                    <button onclick="randomMainCard()" class="px-4 py-3 bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-400 hover:text-slate-200 rounded-xl text-sm transition-colors" title="Randomize Card">
+                        <i data-lucide="shuffle" class="w-4 h-4"></i>
+                    </button>
+                    <button onclick="nextMainCard()" class="flex-1 py-3 bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-bold text-sm rounded-xl transition-colors flex justify-center items-center space-x-2">
+                        <span>Next</span>
+                        <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Exam Simulator View -->
+            <div id="view-exam" class="hidden max-w-4xl mx-auto space-y-6">
+                <!-- Exam Welcome Card -->
+                <div id="exam-start-card" class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6 text-center">
+                    <div class="w-16 h-16 bg-emerald-950 border border-emerald-500/30 rounded-2xl flex items-center justify-center text-emerald-400 mx-auto">
+                        <i data-lucide="award" class="w-8 h-8"></i>
+                    </div>
+                    <div class="space-y-2 max-w-lg mx-auto">
+                        <h2 class="text-2xl font-bold text-white">Comprehensive Exam Simulator</h2>
+                        <p class="text-slate-400 text-sm">Test your total syllabus readiness with 15 randomly selected questions from all 12 assignment weeks under timed exam conditions.</p>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-3 max-w-md mx-auto text-left py-2">
+                        <div class="p-3 bg-slate-950 rounded-xl border border-slate-800">
+                            <span class="text-[10px] text-slate-500 uppercase font-bold block">Questions</span>
+                            <span class="text-base font-bold text-white">15 MCQs</span>
+                        </div>
+                        <div class="p-3 bg-slate-950 rounded-xl border border-slate-800">
+                            <span class="text-[10px] text-slate-500 uppercase font-bold block">Time Limit</span>
+                            <span class="text-base font-bold text-white">15 Mins</span>
+                        </div>
+                        <div class="p-3 bg-slate-950 rounded-xl border border-slate-800">
+                            <span class="text-[10px] text-slate-500 uppercase font-bold block">Pass Mark</span>
+                            <span class="text-base font-bold text-emerald-400">70% Score</span>
+                        </div>
+                    </div>
+
+                    <button onclick="startExamSession()" class="px-8 py-3.5 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold text-sm rounded-xl transition-all shadow-lg shadow-emerald-500/20 inline-flex items-center space-x-2">
+                        <i data-lucide="play" class="w-4 h-4 fill-current"></i>
+                        <span>Start Timed Exam</span>
+                    </button>
+                </div>
+
+                <!-- Exam Active Session -->
+                <div id="exam-active-card" class="hidden space-y-6">
+                    <!-- Exam Header Bar -->
+                    <div class="flex items-center justify-between p-4 bg-slate-900 border border-slate-800 rounded-xl">
+                        <div class="flex items-center space-x-3">
+                            <span class="px-2.5 py-1 bg-rose-950 text-rose-400 border border-rose-800/60 rounded-md text-xs font-bold flex items-center gap-1.5">
+                                <i data-lucide="clock" class="w-3.5 h-3.5"></i>
+                                <span id="exam-timer-display">15:00</span>
+                            </span>
+                            <span class="text-xs text-slate-400">Wildlife Ecology Examination</span>
+                        </div>
+                        <div class="text-xs font-semibold text-slate-300">
+                            Question <span id="exam-current-num" class="text-emerald-400">1</span> of 15
+                        </div>
+                    </div>
+
+                    <!-- Exam Question Box -->
+                    <div class="p-6 bg-slate-900 border border-slate-800 rounded-2xl space-y-5">
+                        <div class="flex items-center justify-between">
+                            <span id="exam-q-source" class="text-xs font-semibold text-emerald-400 bg-emerald-950 px-2.5 py-1 border border-emerald-800 rounded-md">
+                                Week Source
+                            </span>
+                        </div>
+
+                        <h3 id="exam-q-text" class="text-lg font-medium text-slate-100">
+                            Question text goes here?
+                        </h3>
+
+                        <!-- Options List -->
+                        <div id="exam-options-container" class="space-y-2.5">
+                            <!-- Dynamic Options Buttons -->
+                        </div>
+                    </div>
+
+                    <!-- Exam Controls -->
+                    <div class="flex justify-between items-center">
+                        <button onclick="prevExamQuestion()" id="btn-exam-prev" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-slate-300 rounded-xl text-sm font-medium border border-slate-800 flex items-center space-x-2">
+                            <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                            <span>Previous</span>
+                        </button>
+                        <button onclick="nextExamQuestion()" id="btn-exam-next" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-bold rounded-xl text-sm flex items-center space-x-2">
+                            <span>Next Question</span>
+                            <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                        </button>
+                        <button onclick="submitExam()" id="btn-exam-submit" class="hidden px-6 py-2 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-xl text-sm shadow-lg shadow-rose-600/20">
+                            Submit Examination
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Exam Results Card -->
+                <div id="exam-results-card" class="hidden bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6 text-center">
+                    <div id="exam-result-icon-box" class="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto">
+                        <!-- Dynamic Icon -->
+                    </div>
+
+                    <div class="space-y-2">
+                        <h2 id="exam-result-status" class="text-2xl font-bold text-white">Exam Passed!</h2>
+                        <p id="exam-result-msg" class="text-slate-400 text-sm">Great job! You showed high mastery over the Wildlife Ecology syllabus.</p>
+                    </div>
+
+                    <div class="p-6 bg-slate-950 rounded-2xl border border-slate-800 max-w-md mx-auto grid grid-cols-2 gap-4 text-center">
+                        <div>
+                            <span class="text-xs text-slate-500 uppercase font-semibold">Final Score</span>
+                            <div id="exam-score-val" class="text-3xl font-extrabold text-emerald-400 mt-1">12 / 15</div>
+                        </div>
+                        <div>
+                            <span class="text-xs text-slate-500 uppercase font-semibold">Percentage</span>
+                            <div id="exam-percent-val" class="text-3xl font-extrabold text-white mt-1">80%</div>
+                        </div>
+                    </div>
+
+                    <div id="exam-breakdown-list" class="text-left max-w-2xl mx-auto space-y-3 pt-4 border-t border-slate-800">
+                        <h4 class="text-sm font-bold text-slate-200 mb-2">Detailed Question Review</h4>
+                        <!-- Dynamic Breakdown -->
+                    </div>
+
+                    <div class="pt-4">
+                        <button onclick="switchTab('exam')" class="px-6 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-sm rounded-xl border border-slate-700">
+                            Retake Exam
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </main>
+
+    <!-- JavaScript Data & Logic -->
+    <script>
+        // Full Question Bank derived directly from Week 1 to Week 12 Assignment Solutions
+        const COURSE_DATA = [
+            {
+                week: 1,
+                title: "Introduction & Fundamentals of Ecology",
+                questions: [
+                    { id: "w1q1", q: "Ecology is the scientific study of _______ that determine the distribution and abundance of organisms.", options: ["a. statics", "b. interactions", "c. dynamics", "d. habitat"], correct: "b. interactions", exp: "Ecology is defined as the scientific study of interactions that determine the distribution and abundance of organisms." },
+                    { id: "w1q2", q: "Carolus Linnaeus is considered the father of:", options: ["(a) Biogeography", "(b) Modern taxonomy", "(c) Population ecology", "(d) Botanical geography"], correct: "(b) Modern taxonomy", exp: "Carolus Linnaeus is celebrated as the father of modern taxonomy." },
+                    { id: "w1q3", q: "\"Enquiry into plants\" is a book written by:", options: ["a. Theophrastus", "b. Linnaeus", "c. Malthus", "d. Humboldt"], correct: "a. Theophrastus", exp: "Theophrastus authored 'Enquiry into plants', making pioneering early contributions to botany." },
+                    { id: "w1q4", q: "Who amongst these is considered the father of Biogeography?", options: ["a. Theophrastus", "b. Linnaeus", "c. Malthus", "d. Humboldt"], correct: "d. Humboldt", exp: "Alexander von Humboldt is widely recognized as the father of Biogeography." },
+                    { id: "w1q5", q: "Genetic adaptation refers to:", options: ["(a) High reproductive rate in one generation", "(b) Inheritable fitness", "(c) Physical strength of an individual", "(d) Short-term environmental comfort"], correct: "(b) Inheritable fitness", exp: "Genetic adaptation involves inheritable traits that increase evolutionary fitness across generations." },
+                    { id: "w1q6", q: "Thomas Robert Malthus influenced studies in:", options: ["(a) Community ecology", "(b) Marine ecology", "(c) Population ecology", "(d) Behavioural ecology"], correct: "(c) Population ecology", exp: "Malthus' work on population dynamics and resource limits heavily influenced population ecology." },
+                    { id: "w1q7", q: "Which approach tests ecological ideas through experiments?", options: ["(a) Theoretical approach", "(b) Field approach", "(c) Laboratory approach", "(d) Descriptive approach"], correct: "(c) Laboratory approach", exp: "Laboratory approaches test controlled ecological hypotheses experimentally." },
+                    { id: "w1q8", q: "Which approach mainly depends on direct observation of organisms in natural surroundings?", options: ["(a) Laboratory approach", "(b) Historical approach", "(c) Theoretical approach", "(d) Field approach"], correct: "(d) Field approach", exp: "Field approaches rely on direct observation in natural settings." },
+                    { id: "w1q9", q: "In the Greek word root of Ecology, 'logos' refers to:", options: ["a. household", "b. preservation", "c. environment", "d. study"], correct: "d. study", exp: "'Oikos' means household, while 'logos' means the study of." },
+                    { id: "w1q10", q: "Charles Darwin is associated with:", options: ["(a) The theory of ecosystem formation", "(b) The theory of taxonomy", "(c) The theory of botanical geography", "(d) The theory of evolution and natural selection"], correct: "(d) The theory of evolution and natural selection", exp: "Darwin proposed evolutionary theory driven by natural selection." }
+                ]
+            },
+            {
+                week: 2,
+                title: "Levels of Organization & Biodiversity Values",
+                questions: [
+                    { id: "w2q1", q: "Hierarchy emerges almost inevitably through a wide variety of evolutionary processes, for the simple reason that hierarchical structures are _______.", options: ["a. perfect", "b. imperfect", "c. stable", "d. unstable"], correct: "c. stable", exp: "Hierarchical structures provide organizational stability during evolution." },
+                    { id: "w2q2", q: "Which level is formed when similar cells and their extracellular matrix perform a specific function?", options: ["(a) Organ", "(b) Tissue", "(c) Organ system", "(d) Population"], correct: "(b) Tissue", exp: "A tissue is an ensemble of similar cells and matrix performing a specific function." },
+                    { id: "w2q3", q: "\"The diversity that exists within an ecosystem\" is called:", options: ["a. alpha (α) biodiversity", "b. beta (β) biodiversity", "c. gamma (γ) biodiversity", "d. delta (δ) biodiversity"], correct: "a. alpha (α) biodiversity", exp: "Alpha diversity measures local biodiversity within a specific ecosystem." },
+                    { id: "w2q4", q: "\"Groups of actually or potentially interbreeding natural populations, which are reproductively isolated\" defines:", options: ["a. cells", "b. species", "c. ecosystems", "d. biomes"], correct: "b. species", exp: "This is Ernst Mayr's biological species concept." },
+                    { id: "w2q5", q: "The emergent principle can be stated as:", options: ["a. Whole = sum of parts", "b. Whole < sum of parts", "c. Whole > sum of parts", "d. None of these"], correct: "c. Whole > sum of parts", exp: "Emergent properties mean systemic wholes possess qualities greater than individual parts alone." },
+                    { id: "w2q6", q: "The smallest unit of life is the:", options: ["(a) Cell", "(b) Tissue", "(c) Organ", "(d) Organism"], correct: "(a) Cell", exp: "The cell is the basic functional and structural unit of living organisms." },
+                    { id: "w2q7", q: "Diversity of genetic information present at levels of phyla, families, species, and populations is:", options: ["(a) Ecosystem biodiversity", "(b) Species evenness", "(c) Genetic biodiversity", "(d) Species richness"], correct: "(c) Genetic biodiversity", exp: "Genetic biodiversity encompasses total hereditary variation." },
+                    { id: "w2q8", q: "The value of leaving use and non-use values for future generations is called:", options: ["(a) Altruistic value", "(b) Option value", "(c) Existence value", "(d) Bequest value"], correct: "(d) Bequest value", exp: "Bequest value represents preserving resources for future generations." },
+                    { id: "w2q9", q: "Value arising even though a resource is not being used is called:", options: ["(a) Direct value", "(b) Indirect value", "(c) Non-use value", "(d) Productive value"], correct: "(c) Non-use value", exp: "Non-use values reflect intrinsic appreciation independent of active utilization." },
+                    { id: "w2q10", q: "Species richness refers to:", options: ["(a) The distribution of individuals among species", "(b) The genetic variation within one population", "(c) The number of ecosystems in a biome", "(d) The number of species present"], correct: "(d) The number of species present", exp: "Richness simply counts total unique species in a defined sample/area." }
+                ]
+            },
+            {
+                week: 3,
+                title: "Interspecific Interactions & Ethology",
+                questions: [
+                    { id: "w3q1", q: "I observe a bird take a tick out of another bird's head and eat it. In social context, this is:", options: ["a. tick hunting", "b. auto grooming", "c. allo grooming", "d. foraging"], correct: "c. allo grooming", exp: "Allo grooming refers to grooming behavior directed at another individual." },
+                    { id: "w3q2", q: "Leech is an example of:", options: ["(a) endoparasite", "(b) herbivore predator", "(c) parasitoid", "(d) ectoparasite"], correct: "(d) ectoparasite", exp: "Leeches feed on the outer surface of hosts as ectoparasites." },
+                    { id: "w3q3", q: "An ecological interaction in which both participating organisms are harmed is called:", options: ["(a) mutualism", "(b) commensalism", "(c) competition", "(d) neutralism"], correct: "(c) competition", exp: "In competition (-/- interaction), both competitors incur fitness costs." },
+                    { id: "w3q4", q: "Interspecific interaction occurs between:", options: ["(a) members of different species", "(b) members of the same species", "(c) two organisms that are both benefited", "(d) two organisms that remain unaffected"], correct: "(a) members of different species", exp: "'Inter-' means between different species." },
+                    { id: "w3q5", q: "Distance maintained by nesting penguins to avoid pecking from neighbours relates to:", options: ["(a) herbivory", "(b) parasitoid pressure", "(c) prey switching", "(d) territorial spacing"], correct: "(d) territorial spacing", exp: "Pecking distance establishes territorial boundaries among colonial birds." },
+                    { id: "w3q6", q: "A parasite that lives inside the body of its host is called:", options: ["(a) ectoparasite", "(b) endoparasite", "(c) predator", "(d) commensal"], correct: "(b) endoparasite", exp: "Endoparasites reside internally within hosts." },
+                    { id: "w3q7", q: "Birds on giraffe are an example of:", options: ["a. colony", "b. commensalism", "c. protocooperation", "d. allelopathy"], correct: "c. protocooperation", exp: "Protocooperation is mutually beneficial interaction that is non-obligatory." },
+                    { id: "w3q8", q: "Competition where organisms directly consume limited resources so less remains for others:", options: ["(a) interference competition", "(b) exploitative competition", "(c) apparent competition", "(d) neutral competition"], correct: "(b) exploitative competition", exp: "Exploitative competition reduces resource availability indirectly through uptake." },
+                    { id: "w3q9", q: "Interference competition is also known as:", options: ["(a) apparent competition", "(b) contest competition", "(c) niche competition", "(d) exploitative competition"], correct: "(b) contest competition", exp: "Interference competition directly combats or restricts access, known as contest competition." },
+                    { id: "w3q10", q: "The scientific study of animal behaviour is called:", options: ["a. behaviourism", "b. ecology", "c. ethology", "d. prey-predator dynamics"], correct: "c. ethology", exp: "Ethology focuses specifically on natural animal behavior." }
+                ]
+            },
+            {
+                week: 4,
+                title: "Ecosystem Energy Flow & Trophic Structure",
+                questions: [
+                    { id: "w4q1", q: "Consider Grass → Grasshopper → Frog → Snake → Hawk. In this chain, hawk is:", options: ["a. hawk is producer", "b. hawk is consumer and carnivore", "c. hawk is consumer and herbivore", "d. hawk is decomposer"], correct: "b. hawk is consumer and carnivore", exp: "Hawk occupies top consumer level feeding on snakes (carnivore)." },
+                    { id: "w4q2", q: "Trees → Birds → Parasites → Hyperparasites represents:", options: ["a. upright pyramid of numbers", "b. inverted pyramid of numbers", "c. spindle pyramid of numbers", "d. dumb-bell pyramid of numbers"], correct: "b. inverted pyramid of numbers", exp: "Single trees support many birds, hosting even higher parasite numbers (inverted pyramid)." },
+                    { id: "w4q3", q: "Glacial lakes are typical examples of:", options: ["a. eutrophic lakes", "b. hypereutrophic lakes", "c. oligotrophic lakes", "d. mesotrophic lakes"], correct: "c. oligotrophic lakes", exp: "Glacial lakes feature low nutrient levels and high oxygen clarity (oligotrophic)." },
+                    { id: "w4q4", q: "In a grazing food chain, the first trophic level after producers is occupied by:", options: ["(a) Carnivores", "(b) Decomposers", "(c) Detritivores", "(d) Herbivores"], correct: "(d) Herbivores", exp: "Primary consumers (herbivores) directly eat photosynthetic producers." },
+                    { id: "w4q5", q: "Which statement correctly defines net primary production (NPP)?", options: ["(a) Energy intercepted by producers from Sun", "(b) Total energy lost during transfer between levels", "(c) Gross primary production minus energy lost through respiration per unit time", "(d) Energy stored only in herbivore biomass"], correct: "(c) Gross primary production minus energy lost through respiration per unit time", exp: "NPP = GPP - Respiration." },
+                    { id: "w4q6", q: "Which statement correctly defines gross primary production (GPP)?", options: ["(a) Energy fixed through photosynthesis per unit time", "(b) Energy lost by organisms through respiration", "(c) Total number of producers in ecosystem", "(d) Organic matter consumed by herbivores"], correct: "(a) Energy fixed through photosynthesis per unit time", exp: "GPP represents total rate of organic matter creation by autotrophs." },
+                    { id: "w4q7", q: "Which chain best represents a detritus food chain?", options: ["(a) Fallen leaves → detritivores → small fish → large fish", "(b) Grass → chital → tiger", "(c) Rat → flea → parasitic protozoa", "(d) Phytoplankton → zooplankton → fish"], correct: "(a) Fallen leaves → detritivores → small fish → large fish", exp: "Detritus chains originate from non-living organic matter like fallen leaves." },
+                    { id: "w4q8", q: "Moving up the food chain Grass → Grasshopper → Frog → Snake → Hawk:", options: ["a. available energy decreases", "b. available energy increases", "c. available energy remains same", "d. available energy is zero everywhere"], correct: "a. available energy decreases", exp: "Energy dissipates at each transfer step (10% rule)." },
+                    { id: "w4q9", q: "Which statement correctly describes a decomposer?", options: ["(a) Feeds only on living plants", "(b) Consumes only primary consumers", "(c) Converts dead material into soil and recycles nutrients", "(d) Always occupies quaternary level"], correct: "(c) Converts dead material into soil and recycles nutrients", exp: "Decomposers break down dead biomass to recycle essential minerals." },
+                    { id: "w4q10", q: "Which description best defines a heterotroph?", options: ["(a) Converts sunlight into inorganic nutrients", "(b) An organism that cannot produce its own food and depends on organic carbon from other sources", "(c) Uses chemical reactions to manufacture minerals", "(d) Occupies only first trophic level"], correct: "(b) An organism that cannot produce its own food and depends on organic carbon from other sources", exp: "Heterotrophs rely on external organic carbon sources." }
+                ]
+            },
+            {
+                week: 5,
+                title: "Population Dynamics & Sampling Methods",
+                questions: [
+                    { id: "w5q1", q: "In population dynamics, which pair represents additions to an existing population?", options: ["(a) Mortality and emigration", "(b) Natality and immigration", "(c) Mortality and natality", "(d) Immigration and emigration"], correct: "(b) Natality and immigration", exp: "Births (natality) and incoming individuals (immigration) add to population size." },
+                    { id: "w5q2", q: "Cover board surveys are typically used for sampling:", options: ["a. herpetofauna", "b. fishes", "c. large mammals", "d. carnivores"], correct: "a. herpetofauna", exp: "Reptiles and amphibians (herpetofauna) seek shelter beneath artificial cover boards." },
+                    { id: "w5q3", q: "Pan traps are used for sampling:", options: ["a. bees", "b. butterflies", "c. non-pollinator insects", "d. pollinator insects"], correct: "d. pollinator insects", exp: "Colored pan traps attract and collect insect pollinators." },
+                    { id: "w5q4", q: "A procedure where every combination of sampling units has equal selection chance:", options: ["a. Simple random sampling", "b. Systematic sampling", "c. Stratified sampling", "d. Multistage sampling"], correct: "a. Simple random sampling", exp: "Equal probability selection defines simple random sampling." },
+                    { id: "w5q5", q: "Minimum replacement level fertility for population growth should be greater than:", options: ["a. 1", "b. 2", "c. 3", "d. 4"], correct: "b. 2", exp: "A fertility rate above 2.0 (approx 2.1) compensates for parental replacement and infant mortality." },
+                    { id: "w5q6", q: "A list of sampling units is called a:", options: ["(a) Sample", "(b) Sampling intensity", "(c) Sampling frame", "(d) Stratum"], correct: "(c) Sampling frame", exp: "The sampling frame consists of all identifiable potential sampling units." },
+                    { id: "w5q7", q: "In capture-recapture method, the first stage involves:", options: ["(a) Counting faecal pellets", "(b) Removing trapped animals permanently", "(c) Estimating bait consumption", "(d) Capturing, marking and releasing animals"], correct: "(d) Capturing, marking and releasing animals", exp: "Initial trapping requires marking organisms before release." },
+                    { id: "w5q8", q: "The logistic growth equation, when plotted, appears:", options: ["a. I shaped", "b. J shaped", "c. S shaped", "d. O shaped"], correct: "c. S shaped", exp: "Logistic growth levels off at carrying capacity, creating a sigmoidal (S-shaped) curve." },
+                    { id: "w5q9", q: "Employs a rule of selecting every kth unit starting with a random start 1 to k:", options: ["a. Simple random sampling", "b. Systematic sampling", "c. Stratified sampling", "d. Multistage sampling"], correct: "b. Systematic sampling", exp: "Systematic sampling samples at fixed intervals (kth unit)." },
+                    { id: "w5q10", q: "Which of these is NOT a measure of absolute population density?", options: ["a. total count", "b. pelt count", "c. capture-recapture method", "d. removal method"], correct: "b. pelt count", exp: "Pelt counts indicate relative abundance trends rather than exact density per unit area." }
+                ]
+            },
+            {
+                week: 6,
+                title: "Community Ecology & Succession Concepts",
+                questions: [
+                    { id: "w6q1", q: "A guild is a group of species that:", options: ["(a) Occupy only one climax community", "(b) Have identical population size", "(c) Utilise resources in a similar way", "(d) Are confined to saline habitats"], correct: "(c) Utilise resources in a similar way", exp: "Guilds exploit similar environmental resources in comparable manners." },
+                    { id: "w6q2", q: "The climax near Tindni village controlled by cattle grazing disturbance is an example of:", options: ["a. climatic climax", "b. edaphic climax", "c. disclimax", "d. catastrophic climax"], correct: "c. disclimax", exp: "Disturbance-maintained vegetation states (like heavy grazing) form a disclimax." },
+                    { id: "w6q3", q: "Species abundance may be expressed in terms of:", options: ["(a) Climate, soil and slope", "(b) Number of individuals, biomass or cover", "(c) Hydrosere, xerosere and halosere", "(d) Resistance, resilience and stability"], correct: "(b) Number of individuals, biomass or cover", exp: "Abundance measures individual counts, total biomass, or ground cover percentage." },
+                    { id: "w6q4", q: "Resistance refers to the ability of a community to:", options: ["(a) Recover quickly after disturbance", "(b) Persist without change in the face of disturbance", "(c) Increase pioneer species", "(d) Replace one seral stage"], correct: "(b) Persist without change in the face of disturbance", exp: "Resistance measures capacity to withstand perturbation without altering structure." },
+                    { id: "w6q5", q: "Importance Value Index (IVI) can be written as:", options: ["a. Relative density + Relative frequency X Relative dominance", "b. Relative density X Relative frequency + Relative dominance", "c. Relative density + Relative frequency + Relative dominance", "d. Relative density X Relative frequency X Relative dominance"], correct: "c. Relative density + Relative frequency + Relative dominance", exp: "IVI = Relative Density + Relative Frequency + Relative Dominance." },
+                    { id: "w6q6", q: "Secondary succession refers to succession that occurs:", options: ["(a) On newly exposed rock or sand", "(b) In a saline body", "(c) After severe disturbance or removal of a pre-existing community", "(d) Only when climate controls"], correct: "(c) After severe disturbance or removal of a pre-existing community", exp: "Secondary succession follows partial or full vegetation destruction where soil remains intact." },
+                    { id: "w6q7", q: "Lithosere is an example of:", options: ["a. hydrosere", "b. xerosere", "c. psammosere", "d. halosere"], correct: "b. xerosere", exp: "Lithosere represents ecological succession initiating on bare rock surfaces (xeric)." },
+                    { id: "w6q8", q: "A transition area where two communities meet and integrate is called:", options: ["(a) Habitat", "(b) Niche", "(c) Ecotone", "(d) Sere"], correct: "(c) Ecotone", exp: "An ecotone is a boundary/transition zone between ecological communities." },
+                    { id: "w6q9", q: "Which of these is correct regarding niche size?", options: ["a. Fundamental niche > Realised niche", "b. Fundamental niche = Realised niche", "c. Fundamental niche < Realised niche", "d. a or b"], correct: "d. a or b", exp: "Realized niche is smaller than or equal to fundamental niche due to competition." },
+                    { id: "w6q10", q: "Species richness refers to:", options: ["(a) Number of species", "(b) Number of individuals of one species", "(c) Biomass of dominant species", "(d) Basal area of all trees"], correct: "(a) Number of species", exp: "Richness measures the total count of distinct species in a community." }
+                ]
+            },
+            {
+                week: 7,
+                title: "Dispersal & Habitat Adaptations",
+                questions: [
+                    { id: "w7q1", q: "In an estuary, species may use areas of:", options: ["(a) high, intermediate, and low salinity", "(b) only high temperature and high fertility", "(c) only alpine wind", "(d) only forest canopy"], correct: "(a) high, intermediate, and low salinity", exp: "Estuaries feature wide salinity gradients used by diverse species." },
+                    { id: "w7q2", q: "Movement of individuals away from birth/hatching place into new habitats to survive and reproduce:", options: ["a. translocation", "b. migration", "c. dispersal", "d. drifting"], correct: "c. dispersal", exp: "Dispersal is natal or breeding movement away from parent location." },
+                    { id: "w7q3", q: "Transplantation experiments are used to find:", options: ["a. potential range", "b. effective range", "c. actual range", "d. economic range"], correct: "a. potential range", exp: "Transplanting tests if an area outside current occupancy can support survival (potential range)." },
+                    { id: "w7q4", q: "Pneumatophores are roots that:", options: ["(a) move downward to store excess salts", "(b) spread into sand dunes", "(c) grow upward from the ground to obtain air", "(d) become thorns"], correct: "(c) grow upward from the ground to obtain air", exp: "Pneumatophores are specialized respiratory roots projected upward in waterlogged soils." },
+                    { id: "w7q5", q: "At night, cooler denser air from upper hills flows down towards valleys. This pattern is:", options: ["(a) valley breeze", "(b) hill wind", "(c) ocean breeze", "(d) estuary current"], correct: "(b) hill wind", exp: "Katabatic drainage of cold air down slopes at night forms hill winds." },
+                    { id: "w7q6", q: "Flamingos in Rann of Kutch are associated with water bodies because they need:", options: ["(a) high wind speeds", "(b) food organisms in water and safe breeding conditions", "(c) dry leaves", "(d) tall coniferous trees"], correct: "(b) food organisms in water and safe breeding conditions", exp: "Saline mudflats offer abundant aquatic organisms and isolation from predators." },
+                    { id: "w7q7", q: "Estuaries are specialized habitats because they contain:", options: ["(a) only freshwater", "(b) only saline water", "(c) only dry land", "(d) a meeting zone of freshwater and saline water"], correct: "(d) a meeting zone of freshwater and saline water", exp: "Estuaries form brackish mixing zones where rivers enter oceans." },
+                    { id: "w7q8", q: "The movement of lions across the Gir landscape is an example of:", options: ["a. diffusion", "b. secular dispersal", "c. jump dispersal", "d. drifting"], correct: "a. diffusion", exp: "Gradual range movement across hospitable terrain is diffusion." },
+                    { id: "w7q9", q: "Mangroves are adapted to areas that experience:", options: ["(a) low salinity and dryness", "(b) snow accumulation", "(c) deep desert sand", "(d) high salinity and partial or complete inundation"], correct: "(d) high salinity and partial or complete inundation", exp: "Mangroves thrive in intertidal saline coastal sediments." },
+                    { id: "w7q10", q: "Scarcity of food is a:", options: ["a. chemical factor", "b. demographic factor", "c. push factor", "d. pull factor"], correct: "c. push factor", exp: "Unfavorable localized conditions like starvation push organisms to disperse." }
+                ]
+            },
+            {
+                week: 8,
+                title: "Habitat Degradation & Population Paradigms",
+                questions: [
+                    { id: "w8q1", q: "Which correctly represents the process of habitat fragmentation and loss?", options: ["a. Original forest → Dissection → Perforation → Fragmentation → Attrition", "b. Original forest → Dissection → Attrition → Fragmentation → Perforation", "c. Original forest → Dissection → Perforation → Attrition → Fragmentation", "d. Original forest → Dissection → Fragmentation → Perforation → Attrition"], correct: "a. Original forest → Dissection → Perforation → Fragmentation → Attrition", exp: "Standard landscape fragmentation sequence begins with road dissection and ends in patch attrition." },
+                    { id: "w8q2", q: "Habitat degradation means:", options: ["(a) complete removal of all organisms", "(b) legal declaration of protected area", "(c) breaking forest into administrative zones", "(d) reduction in habitat quality for a given species"], correct: "(d) reduction in habitat quality for a given species", exp: "Degradation lowers carrying capacity and suitability without immediate full clearing." },
+                    { id: "w8q3", q: "When area is reduced by 90% and z = 0.30, species richness approximately becomes:", options: ["(a) one-tenth of original", "(b) half of original", "(c) double original", "(d) unchanged"], correct: "(b) half of original", exp: "Using S = cA^z, 0.10^0.30 ≈ 0.50 (species count drops by ~50%)." },
+                    { id: "w8q4", q: "Breaking a natural landscape into small isolated parcels within human land is:", options: ["(a) habitat restoration", "(b) habitat fragmentation", "(c) ex-situ preservation", "(d) seed dormancy"], correct: "(b) habitat fragmentation", exp: "Fragmentation subdivides continuous habitats into isolated fragments." },
+                    { id: "w8q5", q: "We prefer areas for creating conservation reserves where the level of threat is:", options: ["a. very high", "b. medium", "c. very low", "d. non-existent"], correct: "b. medium", exp: "Medium threat areas yield optimal efficiency where intervention makes the biggest positive difference." },
+                    { id: "w8q6", q: "A tiny population moving to extinction due to Allee effect & demographic stochasticity is:", options: ["(a) habitat displacement", "(b) small population paradigm", "(c) reserve design", "(d) biodiversity repository"], correct: "(b) small population paradigm", exp: "The small population paradigm studies intrinsic extinction risks in tiny populations." },
+                    { id: "w8q7", q: "A population shrinking due to habitat loss, competition, and poaching is studied under:", options: ["(a) declining population paradigm", "(b) small population paradigm", "(c) island biogeography", "(d) cryopreservation"], correct: "(a) declining population paradigm", exp: "The declining population paradigm diagnoses environmental drivers causing population reduction." },
+                    { id: "w8q8", q: "Which of these is a deterministic factor in population loss?", options: ["a. environmental variation", "b. forest fire", "c. death rate", "d. diseases"], correct: "c. death rate", exp: "Average mortality rates are deterministic inputs, whereas fires or weather represent stochastic noise." },
+                    { id: "w8q9", q: "Roads, railways, and dams contribute to fragmentation because they act as:", options: ["(a) mortality sources and physical barriers", "(b) seed collection centres", "(c) botanical repositories", "(d) cryopreservation facilities"], correct: "(a) mortality sources and physical barriers", exp: "Infrastructure kills wildlife directly and blocks movement." },
+                    { id: "w8q10", q: "The acronym HIPPO does NOT include:", options: ["a. habitat loss", "b. invasive species", "c. pollination", "d. pollution"], correct: "c. pollination", exp: "HIPPO stands for Habitat loss, Invasive species, Pollution, Population growth, Overharvesting." }
+                ]
+            },
+            {
+                week: 9,
+                title: "Anthropocene & Sustainability Models",
+                questions: [
+                    { id: "w9q1", q: "A proposed epoch marked by significant human impact on Earth's geology & ecosystems:", options: ["(a) Holocene", "(b) Anthropocene", "(c) Pleistocene", "(d) Carboniferous"], correct: "(b) Anthropocene", exp: "Anthropocene designates the current human-dominated geological period." },
+                    { id: "w9q2", q: "According to Malthusian model:", options: ["a. Population grows geometrically, food supply increases arithmetically", "b. Population grows geometrically, food supply increases geometrically", "c. Population grows arithmetically, food supply increases arithmetically", "d. Population grows arithmetically, food supply increases geometrically"], correct: "a. Population grows geometrically, food supply increases arithmetically", exp: "Malthus posited exponential human growth versus linear food expansion." },
+                    { id: "w9q3", q: "Which of these is NOT a pillar of sustainability?", options: ["a. environmental sustainability", "b. economic sustainability", "c. trans-boundary sustainability", "d. social sustainability"], correct: "c. trans-boundary sustainability", exp: "The 3 core pillars are Environmental, Social, and Economic." },
+                    { id: "w9q4", q: "Demographic transition sees a society move from:", options: ["a. high birth, low death to low birth, low death", "b. low birth, high death to low birth, low death", "c. high birth, high death to low birth, low death", "d. high birth, high death to low birth, high death"], correct: "c. high birth, high death to low birth, low death", exp: "Demographic transition moves societies from high birth & death rates to low birth & death rates." },
+                    { id: "w9q5", q: "Which of the following is listed as a theme of clean technology?", options: ["(a) Water purification", "(b) Predator-prey control", "(c) Migration of birds", "(d) Food chain length"], correct: "(c) Migration of birds", exp: "Clean technology themes track environmental indicators including bird migration corridors." },
+                    { id: "w9q6", q: "When stalactites and stalagmites join together in caves, they form a:", options: ["(a) Lagoon", "(b) Crevice", "(c) Terrace", "(d) Column"], correct: "(d) Column", exp: "Merging roof stalactites and floor stalagmites form continuous mineral columns." },
+                    { id: "w9q7", q: "Which of these is a preventive check according to Malthus?", options: ["a. foresight", "b. vice", "c. misery", "d. flood"], correct: "a. foresight", exp: "Preventive checks involve human moral restraint and foresight to control fertility." },
+                    { id: "w9q8", q: "Which of these IS a pillar of sustainability?", options: ["a. social sustainability", "b. industrial sustainability", "c. agricultural sustainability", "d. trans-boundary sustainability"], correct: "a. social sustainability", exp: "Social sustainability is one of the three foundational pillars." },
+                    { id: "w9q9", q: "In cave formations, deposits growing downward from the roof are called:", options: ["(a) Stalagmites", "(b) Columns", "(c) Stalactites", "(d) Sediment bars"], correct: "(c) Stalactites", exp: "Stalactites hang tight to the ceiling (grow downward)." },
+                    { id: "w9q10", q: "Industrial Haber process heavily alters which biogeochemical cycle?", options: ["(a) Carbon cycle", "(b) Water cycle", "(c) Nitrogen cycle", "(d) Phosphorus cycle"], correct: "(c) Nitrogen cycle", exp: "Synthetic ammonia production quadruples global reactive nitrogen inputs." }
+                ]
+            },
+            {
+                week: 10,
+                title: "Disturbance & Ecotoxicology Basics",
+                questions: [
+                    { id: "w10q1", q: "A community affected by disease, weeds, pollutants, or livestock pressure is best described as:", options: ["(a) Pristine community", "(b) Climax community", "(c) Resistant community", "(d) Disturbed community"], correct: "(d) Disturbed community", exp: "Anthropogenic or natural stressors create disturbed communities." },
+                    { id: "w10q2", q: "When an organism absorbs a toxic substance faster than it excretes or eliminates it:", options: ["(a) Biomagnification", "(b) Bioavailability", "(c) Bioaccumulation", "(d) Biodegradation"], correct: "(c) Bioaccumulation", exp: "Net internal uptake over time leads to bioaccumulation." },
+                    { id: "w10q3", q: "What percentage of marine plastic debris is stated to sink to the ocean bottom?", options: ["(a) 15%", "(b) 30%", "(c) 50%", "(d) 70%"], correct: "(d) 70%", exp: "Approximately 70% of marine plastic waste eventually settles on the seafloor." },
+                    { id: "w10q4", q: "Hydrocarbons derived directly from mineral oils are called:", options: ["(a) Pyrogenic hydrocarbons", "(b) Biogenic hydrocarbons", "(c) Aromatic hydrocarbons", "(d) Petrogenic hydrocarbons"], correct: "(d) Petrogenic hydrocarbons", exp: "Petrogenic hydrocarbons originate from crude petroleum sources." },
+                    { id: "w10q5", q: "Changes in natural/human systems that inadvertently increase climate vulnerability define:", options: ["a. adaptation", "b. mitigation", "c. maladaptation", "d. malmitigation"], correct: "c. maladaptation", exp: "Maladaptation refers to interventions that counterproductively heighten vulnerability." },
+                    { id: "w10q6", q: "A normal community faces one large disturbance and returns close to its earlier state:", options: ["(a) Long-term alteration", "(b) Recovery", "(c) Bioaccumulation", "(d) Habitat displacement"], correct: "(b) Recovery", exp: "Resilient systems undergo post-disturbance recovery to pre-existing baselines." },
+                    { id: "w10q7", q: "Macrodebris in plastic debris context has fragment size of:", options: ["a. > 20 mm", "b. 5 - 20 mm", "c. < 5 mm", "d. < 1 mm"], correct: "a. > 20 mm", exp: "Macrodebris is classified as plastic pieces larger than 20 mm." },
+                    { id: "w10q8", q: "Deepwater Horizon incident is classified by origin as which kind of oil spill?", options: ["(a) Natural", "(b) Accidental", "(c) Intentional", "(d) Biogenic"], correct: "(b) Accidental", exp: "Deepwater Horizon was an industrial disaster (accidental spill)." },
+                    { id: "w10q9", q: "Harmful effects caused by a single or short-term exposure are called:", options: ["(a) Chronic toxicity", "(b) Acute toxicity", "(c) Sub-lethal exposure", "(d) Bioavailability"], correct: "(b) Acute toxicity", exp: "Acute toxicity manifests rapidly following brief high exposures." },
+                    { id: "w10q10", q: "Mesodebris in plastic debris context has fragment size of:", options: ["a. > 20 mm", "b. 5 - 20 mm", "c. < 5 mm", "d. < 1 mm"], correct: "b. 5 - 20 mm", exp: "Mesodebris ranges between 5 mm and 20 mm." }
+                ]
+            },
+            {
+                week: 11,
+                title: "Sustainable Yield & Ecological Restoration",
+                questions: [
+                    { id: "w11q1", q: "Which term refers to total weight of organisms removed by fishing?", options: ["(a) Natural mortality", "(b) Recruitment", "(c) Growth", "(d) Yield to fishery"], correct: "(d) Yield to fishery", exp: "Yield represents the harvested biomass removed by fishing operations." },
+                    { id: "w11q2", q: "Ludwig's ratchet predicts:", options: ["a. decreasing harvesting rate", "b. constant harvesting rate", "c. increasing harvesting rate", "d. fluctuating harvesting rate"], correct: "c. increasing harvesting rate", exp: "Ludwig's ratchet demonstrates overexploitation driven by ratcheting up harvest capacity in good years." },
+                    { id: "w11q3", q: "Deciduous forest converted to mine, filled with water creating a lake visited by birds is:", options: ["a. recovery", "b. restoration", "c. enhancement", "d. replacement"], correct: "d. replacement", exp: "Replacing a destroyed forest with a totally different functional ecosystem (lake) is replacement." },
+                    { id: "w11q4", q: "Which of these is correct regarding Maximum Sustainable Yield (MSY)?", options: ["a. MSY is near the beginning of sigmoidal curve", "b. MSY is near the mid-point of sigmoidal curve", "c. MSY is near the end of sigmoidal curve", "d. None of these"], correct: "b. MSY is near the mid-point of sigmoidal curve", exp: "Population growth rate and surplus production peak around K/2 (mid-point of sigmoid)." },
+                    { id: "w11q5", q: "Which equation is correct for population balance?", options: ["a. R + G = M + F", "b. R + M = G + F", "c. R + F = M + G", "d. R + G + M + F = 0"], correct: "a. R + G = M + F", exp: "Recruitment (R) + Growth (G) = Natural Mortality (M) + Fishing Mortality (F)." },
+                    { id: "w11q6", q: "In a logistic growth curve, growth slows near carrying capacity because population is:", options: ["(a) very small", "(b) newly introduced", "(c) close to the environmental limit", "(d) free from competition"], correct: "(c) close to the environmental limit", exp: "Density dependent resistance increases as N approaches carrying capacity K." },
+                    { id: "w11q7", q: "What does absolute abundance measure?", options: ["(a) Relative catch per unit effort", "(b) Actual number of individuals present", "(c) Percentage change in population", "(d) Estimated trend"], correct: "(b) Actual number of individuals present", exp: "Absolute abundance quantifies exact counts within a specified boundary." },
+                    { id: "w11q8", q: "A root zone treatment plant is an example of:", options: ["a. phytoremediation", "b. biological control", "c. biomagnification", "d. bioaccumulation"], correct: "a. phytoremediation", exp: "Root zone plants process pollutants using wetland vegetation (phytoremediation)." },
+                    { id: "w11q9", q: "Major risk of introducing predators for biological pest control:", options: ["(a) Pest becomes extinct immediately", "(b) Predator cannot reproduce", "(c) Predator reduces rainfall", "(d) Introduced predator may itself become a pest"], correct: "(d) Introduced predator may itself become a pest", exp: "Exotic predators can switch targets and become invasive pests." },
+                    { id: "w11q10", q: "Ecotoxicology studies toxic chemicals mainly at which broader levels?", options: ["(a) Individual atoms only", "(b) Population, community, ecosystem, and biosphere levels", "(c) Market demand only", "(d) Crop yield only"], correct: "(b) Population, community, ecosystem, and biosphere levels", exp: "Ecotoxicology examines systemic ecological consequences above the organismal level." }
+                ]
+            },
+            {
+                week: 12,
+                title: "Comprehensive Review & Advanced Succession",
+                questions: [
+                    { id: "w12q1", q: "In cave formations, deposits growing downward from the roof are called:", options: ["(a) Stalagmites", "(b) Columns", "(c) Stalactites", "(d) Sediment bars"], correct: "(c) Stalactites", exp: "Stalactites hang downward from cave roofs." },
+                    { id: "w12q2", q: "Which of these is a deterministic factor?", options: ["a. environmental variation", "b. forest fire", "c. death rate", "d. diseases"], correct: "c. death rate", exp: "Average mortality/death rate acts as a deterministic parameter." },
+                    { id: "w12q3", q: "An ecological interaction in which both participating organisms are harmed is called:", options: ["(a) mutualism", "(b) commensalism", "(c) competition", "(d) neutralism"], correct: "(c) competition", exp: "Competition reduces fitness in both interacting species." },
+                    { id: "w12q4", q: "Ecology is the scientific study of _______ that determine distribution and abundance:", options: ["a. statics", "b. interactions", "c. dynamics", "d. habitat"], correct: "b. interactions", exp: "Core ecological definition centered on environmental interactions." },
+                    { id: "w12q5", q: "Mesodebris in the context of plastic debris has fragments of size:", options: ["a. > 20 mm", "b. 5 - 20 mm", "c. < 5 mm", "d. < 1 mm"], correct: "b. 5 - 20 mm", exp: "Mesodebris fragments measure 5 to 20 mm." },
+                    { id: "w12q6", q: "Which level is formed when similar cells and extracellular matrix perform a specific function?", options: ["(a) Organ", "(b) Tissue", "(c) Organ system", "(d) Population"], correct: "(b) Tissue", exp: "Cells performing unified functions make up tissues." },
+                    { id: "w12q7", q: "Secondary succession refers to succession that occurs:", options: ["(a) On bare rock", "(b) In saline marsh", "(c) After severe disturbance or removal of a pre-existing community", "(d) Only when climate controls"], correct: "(c) After severe disturbance or removal of a pre-existing community", exp: "Succession on pre-existing organically rich substrate following disturbance." },
+                    { id: "w12q8", q: "A group of organs working together to perform one or more functions is called:", options: ["(a) Tissue", "(b) Organ", "(c) Organism", "(d) Organ system"], correct: "(d) Organ system", exp: "Coordinated organs constitute an organ system." },
+                    { id: "w12q9", q: "After a forest fire, partially burned forest develops through stages toward stability. This is:", options: ["(a) Secondary succession", "(b) Climatic climax", "(c) Bioaccumulation", "(d) Species-area effect"], correct: "(a) Secondary succession", exp: "Post-fire forest re-growth is classic secondary succession." },
+                    { id: "w12q10", q: "If organisms already present change soil conditions driving further community change, succession is:", options: ["(a) Allogenic succession", "(b) Autogenic succession", "(c) Catastrophic succession", "(d) Seasonal succession"], correct: "(b) Autogenic succession", exp: "Autogenic succession is driven internally by the biotic community itself." }
+                ]
+            }
+        ];
+
+        // Global State Management
+        let appState = {
+            currentTab: 'dashboard', // 'dashboard', 'quiz', 'flashcards', 'exam'
+            activeWeek: 1,
+            quizMode: 'practice', // 'practice', 'flashcards'
+            userAnswers: {}, // { 'w1q1': 'b. interactions' }
+            cardMastery: {}, // { 'w1q1': true }
+            examSession: null,
+            flashcardIndex: 0
+        };
+
+        // Initialize Application
+        window.addEventListener('DOMContentLoaded', () => {
+            loadSavedState();
+            renderSidebarNav();
+            renderDashboard();
+            updateGlobalStats();
+            lucide.createIcons();
+
+            // Setup Mobile Menu Toggle
+            document.getElementById('mobile-menu-btn')?.addEventListener('click', () => {
+                const sidebar = document.getElementById('sidebar');
+                sidebar.classList.toggle('-translate-x-full');
+            });
+        });
+
+        // Local Storage Sync
+        function loadSavedState() {
+            const saved = localStorage.getItem('wildlife_ecology_mooc_state');
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    appState.userAnswers = parsed.userAnswers || {};
+                    appState.cardMastery = parsed.cardMastery || {};
+                } catch(e) { console.error("Error loading saved state", e); }
+            }
+        }
+
+        function saveState() {
+            localStorage.setItem('wildlife_ecology_mooc_state', JSON.stringify({
+                userAnswers: appState.userAnswers,
+                cardMastery: appState.cardMastery
+            }));
+            updateGlobalStats();
+        }
+
+        function resetAllProgress() {
+            if (confirm("Are you sure you want to clear all your quiz scores and flashcard progress?")) {
+                appState.userAnswers = {};
+                appState.cardMastery = {};
+                saveState();
+                location.reload();
+            }
+        }
+
+        // Navigation Controller
+        function switchTab(tab, weekNum = null) {
+            appState.currentTab = tab;
+            if (weekNum !== null) appState.activeWeek = weekNum;
+
+            // Update Nav UI
+            ['dashboard', 'flashcards', 'exam'].forEach(t => {
+                const el = document.getElementById(`nav-${t}`);
+                if (el) {
+                    if (t === tab && weekNum === null) {
+                        el.className = "w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors bg-emerald-600/10 text-emerald-400 border border-emerald-500/20";
+                    } else {
+                        el.className = "w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:bg-slate-800/60 hover:text-slate-200 transition-colors";
+                    }
+                }
+            });
+
+            // Hide all Views
+            document.getElementById('view-dashboard').classList.add('hidden');
+            document.getElementById('view-quiz').classList.add('hidden');
+            document.getElementById('view-flashcards').classList.add('hidden');
+            document.getElementById('view-exam').classList.add('hidden');
+
+            // Close Mobile Sidebar
+            document.getElementById('sidebar').classList.add('-translate-x-full');
+
+            // Render Active View
+            if (tab === 'dashboard') {
+                document.getElementById('view-dashboard').classList.remove('hidden');
+                renderDashboard();
+            } else if (tab === 'quiz') {
+                document.getElementById('view-quiz').classList.remove('hidden');
+                renderQuizView();
+            } else if (tab === 'flashcards') {
+                document.getElementById('view-flashcards').classList.remove('hidden');
+                renderMasterFlashcardsView();
+            } else if (tab === 'exam') {
+                document.getElementById('view-exam').classList.remove('hidden');
+            }
+
+            renderSidebarNav();
+            lucide.createIcons();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Render Sidebar Module List
+        function renderSidebarNav() {
+            const container = document.getElementById('module-nav');
+            if (!container) return;
+
+            container.innerHTML = COURSE_DATA.map(w => {
+                const score = calculateWeekScore(w.week);
+                const isActive = appState.currentTab === 'quiz' && appState.activeWeek === w.week;
+                
+                let badgeColor = "bg-slate-800 text-slate-400";
+                if (score.completed) {
+                    badgeColor = score.percent >= 70 ? "bg-emerald-950 text-emerald-400 border border-emerald-800" : "bg-rose-950 text-rose-400 border border-rose-800";
+                }
+
+                return `
+                    <button onclick="switchTab('quiz', ${w.week})" class="w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition-all ${
+                        isActive ? 'bg-emerald-600 text-slate-950 font-bold shadow-md shadow-emerald-900/30' : 'text-slate-300 hover:bg-slate-800/80'
+                    }">
+                        <div class="flex items-center space-x-2 text-left truncate pr-2">
+                            <span class="w-5 text-slate-400 flex-shrink-0">W${w.week}</span>
+                            <span class="truncate">${w.title}</span>
+                        </div>
+                        ${score.completed ? `
+                            <span class="px-1.5 py-0.5 rounded text-[10px] font-bold ${isActive ? 'bg-slate-950 text-emerald-400' : badgeColor}">
+                                ${score.percent}%
+                            </span>
+                        ` : ''}
+                    </button>
+                `;
+            }).join('');
+        }
+
+        // Calculations & Utilities
+        function calculateWeekScore(weekNum) {
+            const weekData = COURSE_DATA.find(w => w.week === weekNum);
+            if (!weekData) return { completed: false, percent: 0, correct: 0, total: 0 };
+
+            let answered = 0;
+            let correct = 0;
+
+            weekData.questions.forEach(q => {
+                if (appState.userAnswers[q.id]) {
+                    answered++;
+                    if (appState.userAnswers[q.id] === q.correct) correct++;
+                }
+            });
+
+            return {
+                completed: answered === weekData.questions.length,
+                percent: Math.round((correct / weekData.questions.length) * 100) || 0,
+                correct,
+                total: weekData.questions.length
+            };
+        }
+
+        function updateGlobalStats() {
+            let totalQuestions = 0;
+            let totalAnswered = 0;
+            let totalCorrect = 0;
+            let masteredModules = 0;
+
+            COURSE_DATA.forEach(w => {
+                const score = calculateWeekScore(w.week);
+                totalQuestions += w.questions.length;
+                totalAnswered += score.correct; // Answered correctly count
+                if (score.completed && score.percent >= 70) masteredModules++;
+            });
+
+            const overallPercent = Math.round((masteredModules / 12) * 100);
+            const totalAnsweredAttempted = Object.keys(appState.userAnswers).length;
+            const accuracy = totalAnsweredAttempted > 0 ? Math.round((totalAnswered / totalAnsweredAttempted) * 100) : 0;
+            const masteredFlashcardCount = Object.values(appState.cardMastery).filter(Boolean).length;
+
+            // Update UI elements
+            document.getElementById('overall-progress-text').innerText = `${overallPercent}%`;
+            document.getElementById('overall-progress-bar').style.width = `${overallPercent}%`;
+            document.getElementById('completed-weeks-count').innerText = `${masteredModules}/12 Modules Passed`;
+            document.getElementById('avg-score-text').innerText = `Acc: ${accuracy}%`;
+
+            document.getElementById('stat-completed').innerText = `${masteredModules}/12`;
+            document.getElementById('stat-questions').innerText = `${totalAnsweredAttempted}`;
+            document.getElementById('stat-accuracy').innerText = `${accuracy}%`;
+            document.getElementById('stat-flashcards').innerText = `${masteredFlashcardCount}`;
+            document.getElementById('top-mastery-count').innerText = `${masteredModules}/12 Modules Mastered`;
+        }
+
+        function startNextUncompletedModule() {
+            for (let w of COURSE_DATA) {
+                const score = calculateWeekScore(w.week);
+                if (!score.completed || score.percent < 70) {
+                    switchTab('quiz', w.week);
+                    return;
+                }
+            }
+            switchTab('quiz', 1);
+        }
+
+        // Render Dashboard View
+        function renderDashboard() {
+            const grid = document.getElementById('modules-grid');
+            if (!grid) return;
+
+            grid.innerHTML = COURSE_DATA.map(w => {
+                const score = calculateWeekScore(w.week);
+                
+                return `
+                    <div class="p-5 bg-slate-900 border border-slate-800 hover:border-slate-700 rounded-2xl flex flex-col justify-between space-y-4 transition-all hover:shadow-lg">
+                        <div class="space-y-2">
+                            <div class="flex justify-between items-center">
+                                <span class="px-2.5 py-0.5 bg-emerald-950 text-emerald-400 border border-emerald-800/60 rounded-md text-xs font-bold">Week ${w.week}</span>
+                                ${score.completed ? `
+                                    <span class="text-xs font-bold px-2 py-0.5 rounded ${score.percent >= 70 ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-rose-500/10 text-rose-400 border border-rose-500/20'}">
+                                        Score: ${score.percent}%
+                                    </span>
+                                ` : `<span class="text-xs text-slate-500">Not Attempted</span>`}
+                            </div>
+                            <h4 class="font-bold text-slate-100 text-base leading-snug">${w.title}</h4>
+                            <p class="text-xs text-slate-400 line-clamp-2">10 Assignment Questions covering official study materials and exam solutions.</p>
+                        </div>
+
+                        <div class="pt-2 border-t border-slate-800/80 flex items-center justify-between">
+                            <span class="text-[11px] text-slate-500">10 MCQs • Flashcards</span>
+                            <button onclick="switchTab('quiz', ${w.week})" class="px-3.5 py-1.5 bg-slate-800 hover:bg-emerald-600 hover:text-slate-950 text-slate-200 text-xs font-bold rounded-lg transition-colors flex items-center space-x-1">
+                                <span>Start Module</span>
+                                <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            lucide.createIcons();
+        }
+
+        // Render Interactive Quiz View
+        function renderQuizView() {
+            const weekData = COURSE_DATA.find(w => w.week === appState.activeWeek);
+            if (!weekData) return;
+
+            document.getElementById('quiz-week-badge').innerText = `Week ${weekData.week}`;
+            document.getElementById('quiz-title').innerText = weekData.title;
+
+            // Render Questions Mode
+            const questionsContainer = document.getElementById('quiz-questions-mode');
+            questionsContainer.innerHTML = weekData.questions.map((q, idx) => {
+                const userAns = appState.userAnswers[q.id];
+                const isAnswered = Boolean(userAns);
+
+                return `
+                    <div class="p-6 bg-slate-900 border border-slate-800 rounded-2xl space-y-4">
+                        <div class="flex justify-between items-start gap-3">
+                            <h4 class="font-semibold text-slate-100 text-base leading-relaxed">
+                                <span class="text-emerald-400 font-bold mr-1.5">${idx + 1}.</span> ${q.q}
+                            </h4>
+                            ${appState.cardMastery[q.id] ? `<span class="p-1 bg-amber-950 text-amber-400 border border-amber-800 rounded-md" title="Mastered Flashcard"><i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i></span>` : ''}
+                        </div>
+
+                        <div class="space-y-2">
+                            ${q.options.map(opt => {
+                                let btnClass = "bg-slate-950 border-slate-800 text-slate-300 hover:bg-slate-800 hover:text-white";
+                                let icon = `<div class="w-4 h-4 rounded-full border border-slate-700 flex-shrink-0"></div>`;
+
+                                if (isAnswered) {
+                                    if (opt === q.correct) {
+                                        btnClass = "bg-emerald-950/80 border-emerald-500 text-emerald-200 font-medium";
+                                        icon = `<i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-400 flex-shrink-0"></i>`;
+                                    } else if (opt === userAns) {
+                                        btnClass = "bg-rose-950/80 border-rose-500 text-rose-200 font-medium";
+                                        icon = `<i data-lucide="x-circle" class="w-4 h-4 text-rose-400 flex-shrink-0"></i>`;
+                                    } else {
+                                        btnClass = "bg-slate-950/40 border-slate-800/40 text-slate-600 opacity-60";
+                                    }
+                                }
+
+                                return `
+                                    <button onclick="handleAnswerSelection('${q.id}', '${escapeQuotes(opt)}')" ${isAnswered ? 'disabled' : ''} class="w-full text-left p-3.5 rounded-xl border text-xs md:text-sm transition-all flex items-center space-x-3 ${btnClass}">
+                                        ${icon}
+                                        <span>${opt}</span>
+                                    </button>
+                                `;
+                            }).join('')}
+                        </div>
+
+                        ${isAnswered ? `
+                            <div class="mt-3 p-3.5 bg-slate-950 rounded-xl border border-slate-800 text-xs text-slate-300 space-y-1">
+                                <div class="font-bold text-emerald-400 flex items-center gap-1.5">
+                                    <i data-lucide="info" class="w-3.5 h-3.5"></i> Correct Solution: ${q.correct}
+                                </div>
+                                <p class="text-slate-400 leading-relaxed">${q.exp}</p>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            }).join('');
+
+            // Render Flashcard Carousel inside Module
+            renderWeekFlashcards();
+
+            // Handle Navigation State
+            document.getElementById('btn-prev-week').disabled = appState.activeWeek === 1;
+            document.getElementById('btn-next-week').disabled = appState.activeWeek === 12;
+
+            lucide.createIcons();
+        }
+
+        function escapeQuotes(str) {
+            return str.replace(/'/g, "\\'");
+        }
+
+        function handleAnswerSelection(qId, selectedOption) {
+            appState.userAnswers[qId] = selectedOption;
+            saveState();
+            renderQuizView();
+            renderSidebarNav();
+        }
+
+        function setQuizMode(mode) {
+            appState.quizMode = mode;
+            const btnPractice = document.getElementById('btn-mode-practice');
+            const btnCards = document.getElementById('btn-mode-cards');
+            const questionsDiv = document.getElementById('quiz-questions-mode');
+            const cardsDiv = document.getElementById('quiz-flashcards-mode');
+
+            if (mode === 'practice') {
+                btnPractice.className = "px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-emerald-600 text-slate-950 border border-emerald-500";
+                btnCards.className = "px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-slate-800 text-slate-300 hover:text-white border border-slate-700";
+                questionsDiv.classList.remove('hidden');
+                cardsDiv.classList.add('hidden');
+            } else {
+                btnCards.className = "px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-emerald-600 text-slate-950 border border-emerald-500";
+                btnPractice.className = "px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-slate-800 text-slate-300 hover:text-white border border-slate-700";
+                cardsDiv.classList.remove('hidden');
+                questionsDiv.classList.add('hidden');
+            }
+        }
+
+        function navigateWeek(delta) {
+            const next = appState.activeWeek + delta;
+            if (next >= 1 && next <= 12) {
+                appState.activeWeek = next;
+                renderQuizView();
+                renderSidebarNav();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        // Render Week Flashcard Mode
+        let weekCardIdx = 0;
+        function renderWeekFlashcards() {
+            const weekData = COURSE_DATA.find(w => w.week === appState.activeWeek);
+            if (!weekData) return;
+
+            const q = weekData.questions[weekCardIdx] || weekData.questions[0];
+            const container = document.getElementById('week-flashcard-container');
+            
+            container.innerHTML = `
+                <div class="w-full max-w-xl bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4 text-center">
+                    <div class="flex justify-between items-center text-xs text-slate-400">
+                        <span>Card ${weekCardIdx + 1} of ${weekData.questions.length}</span>
+                        <button onclick="toggleMastery('${q.id}')" class="text-amber-400 hover:text-amber-300 flex items-center gap-1">
+                            <i data-lucide="star" class="w-3.5 h-3.5 ${appState.cardMastery[q.id] ? 'fill-current' : ''}"></i>
+                            <span>${appState.cardMastery[q.id] ? 'Mastered' : 'Mark Mastered'}</span>
+                        </button>
+                    </div>
+                    <div class="py-6">
+                        <h4 class="text-base font-semibold text-slate-100 mb-3">${q.q}</h4>
+                        <div class="p-3 bg-emerald-950/60 border border-emerald-800/60 rounded-xl text-emerald-300 font-bold text-sm">
+                            ${q.correct}
+                        </div>
+                        <p class="text-xs text-slate-400 mt-3">${q.exp}</p>
+                    </div>
+                    <div class="flex justify-between items-center pt-2 border-t border-slate-800">
+                        <button onclick="stepWeekCard(-1)" class="p-2 bg-slate-800 rounded-lg text-slate-300 hover:text-white"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
+                        <span class="text-xs text-slate-500">Use arrows to study concepts</span>
+                        <button onclick="stepWeekCard(1)" class="p-2 bg-slate-800 rounded-lg text-slate-300 hover:text-white"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
+                    </div>
+                </div>
+            `;
+            lucide.createIcons();
+        }
+
+        function stepWeekCard(delta) {
+            const weekData = COURSE_DATA.find(w => w.week === appState.activeWeek);
+            weekCardIdx = (weekCardIdx + delta + weekData.questions.length) % weekData.questions.length;
+            renderWeekFlashcards();
+        }
+
+        function toggleMastery(qId) {
+            appState.cardMastery[qId] = !appState.cardMastery[qId];
+            saveState();
+            renderWeekFlashcards();
+        }
+
+        // Master Flashcard All-Syllabus View
+        let allCards = [];
+        let isCardFlipped = false;
+
+        function renderMasterFlashcardsView() {
+            if (allCards.length === 0) {
+                COURSE_DATA.forEach(w => {
+                    w.questions.forEach(q => {
+                        allCards.push({ ...q, week: w.week });
+                    });
+                });
+            }
+
+            const q = allCards[appState.flashcardIndex];
+            document.getElementById('card-index-indicator').innerText = `${appState.flashcardIndex + 1} / ${allCards.length}`;
+            document.getElementById('card-week-badge').innerText = `Week ${q.week}`;
+            document.getElementById('card-question-text').innerText = q.q;
+            document.getElementById('card-answer-text').innerText = q.correct;
+            document.getElementById('card-explanation-text').innerText = q.exp;
+
+            const isMastered = Boolean(appState.cardMastery[q.id]);
+            document.getElementById('master-btn-text').innerText = isMastered ? "Mastered" : "Mark as Mastered";
+            document.getElementById('btn-master-card').className = `px-3 py-1 text-xs rounded-lg flex items-center space-x-1.5 transition-colors ${
+                isMastered ? 'bg-amber-500/20 text-amber-300 border border-amber-500/50' : 'bg-slate-800 text-slate-400 hover:text-amber-400 border border-slate-700'
+            }`;
+
+            // Reset flip
+            isCardFlipped = false;
+            document.getElementById('main-flashcard').classList.remove('rotate-y-180');
+            lucide.createIcons();
+        }
+
+        function flipMainCard() {
+            isCardFlipped = !isCardFlipped;
+            const card = document.getElementById('main-flashcard');
+            if (isCardFlipped) card.classList.add('rotate-y-180');
+            else card.classList.remove('rotate-y-180');
+        }
+
+        function nextMainCard() {
+            appState.flashcardIndex = (appState.flashcardIndex + 1) % allCards.length;
+            renderMasterFlashcardsView();
+        }
+
+        function prevMainCard() {
+            appState.flashcardIndex = (appState.flashcardIndex - 1 + allCards.length) % allCards.length;
+            renderMasterFlashcardsView();
+        }
+
+        function randomMainCard() {
+            appState.flashcardIndex = Math.floor(Math.random() * allCards.length);
+            renderMasterFlashcardsView();
+        }
+
+        function toggleMasterCurrentCard() {
+            const q = allCards[appState.flashcardIndex];
+            appState.cardMastery[q.id] = !appState.cardMastery[q.id];
+            saveState();
+            renderMasterFlashcardsView();
+        }
+
+        // Exam Simulator Engine
+        let examTimerInterval = null;
+
+        function startExamSession() {
+            // Pick 15 random questions across all weeks
+            let pool = [];
+            COURSE_DATA.forEach(w => {
+                w.questions.forEach(q => pool.push({ ...q, week: w.week }));
+            });
+            pool.sort(() => 0.5 - Math.random());
+            const examQuestions = pool.slice(0, 15);
+
+            appState.examSession = {
+                questions: examQuestions,
+                answers: {},
+                currentIndex: 0,
+                timeLeft: 15 * 60 // 15 minutes
+            };
+
+            document.getElementById('exam-start-card').classList.add('hidden');
+            document.getElementById('exam-results-card').classList.add('hidden');
+            document.getElementById('exam-active-card').classList.remove('hidden');
+
+            startExamTimer();
+            renderExamQuestion();
+        }
+
+        function startExamTimer() {
+            if (examTimerInterval) clearInterval(examTimerInterval);
+            examTimerInterval = setInterval(() => {
+                if (!appState.examSession) return;
+                appState.examSession.timeLeft--;
+
+                const mins = Math.floor(appState.examSession.timeLeft / 60);
+                const secs = appState.examSession.timeLeft % 60;
+                document.getElementById('exam-timer-display').innerText = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+
+                if (appState.examSession.timeLeft <= 0) {
+                    clearInterval(examTimerInterval);
+                    submitExam();
+                }
+            }, 1000);
+        }
+
+        function renderExamQuestion() {
+            const session = appState.examSession;
+            const q = session.questions[session.currentIndex];
+
+            document.getElementById('exam-current-num').innerText = session.currentIndex + 1;
+            document.getElementById('exam-q-source').innerText = `Week ${q.week} Assignment`;
+            document.getElementById('exam-q-text').innerText = q.q;
+
+            const selected = session.answers[q.id];
+
+            const optionsContainer = document.getElementById('exam-options-container');
+            optionsContainer.innerHTML = q.options.map(opt => {
+                const isSelected = selected === opt;
+                return `
+                    <button onclick="selectExamAnswer('${q.id}', '${escapeQuotes(opt)}')" class="w-full text-left p-3.5 rounded-xl border text-xs md:text-sm transition-all flex items-center space-x-3 ${
+                        isSelected ? 'bg-emerald-950 border-emerald-500 text-emerald-300 font-bold' : 'bg-slate-950 border-slate-800 text-slate-300 hover:bg-slate-800'
+                    }">
+                        <div class="w-4 h-4 rounded-full border ${isSelected ? 'border-emerald-400 bg-emerald-400' : 'border-slate-700'} flex-shrink-0"></div>
+                        <span>${opt}</span>
+                    </button>
+                `;
+            }).join('');
+
+            // Controls
+            document.getElementById('btn-exam-prev').disabled = session.currentIndex === 0;
+            if (session.currentIndex === session.questions.length - 1) {
+                document.getElementById('btn-exam-next').classList.add('hidden');
+                document.getElementById('btn-exam-submit').classList.remove('hidden');
+            } else {
+                document.getElementById('btn-exam-next').classList.remove('hidden');
+                document.getElementById('btn-exam-submit').classList.add('hidden');
+            }
+            lucide.createIcons();
+        }
+
+        function selectExamAnswer(qId, opt) {
+            appState.examSession.answers[qId] = opt;
+            renderExamQuestion();
+        }
+
+        function nextExamQuestion() {
+            if (appState.examSession.currentIndex < appState.examSession.questions.length - 1) {
+                appState.examSession.currentIndex++;
+                renderExamQuestion();
+            }
+        }
+
+        function prevExamQuestion() {
+            if (appState.examSession.currentIndex > 0) {
+                appState.examSession.currentIndex--;
+                renderExamQuestion();
+            }
+        }
+
+        function submitExam() {
+            if (examTimerInterval) clearInterval(examTimerInterval);
+            const session = appState.examSession;
+            let correctCount = 0;
+
+            session.questions.forEach(q => {
+                if (session.answers[q.id] === q.correct) correctCount++;
+            });
+
+            const percent = Math.round((correctCount / session.questions.length) * 100);
+            const passed = percent >= 70;
+
+            document.getElementById('exam-active-card').classList.add('hidden');
+            document.getElementById('exam-results-card').classList.remove('hidden');
+
+            const iconBox = document.getElementById('exam-result-icon-box');
+            if (passed) {
+                iconBox.className = "w-16 h-16 bg-emerald-950 border border-emerald-500/30 rounded-2xl flex items-center justify-center text-emerald-400 mx-auto";
+                iconBox.innerHTML = `<i data-lucide="award" class="w-8 h-8"></i>`;
+                document.getElementById('exam-result-status').innerText = "Exam Passed!";
+                document.getElementById('exam-result-status').className = "text-2xl font-bold text-emerald-400";
+            } else {
+                iconBox.className = "w-16 h-16 bg-rose-950 border border-rose-500/30 rounded-2xl flex items-center justify-center text-rose-400 mx-auto";
+                iconBox.innerHTML = `<i data-lucide="alert-triangle" class="w-8 h-8"></i>`;
+                document.getElementById('exam-result-status').innerText = "Needs Further Revision";
+                document.getElementById('exam-result-status').className = "text-2xl font-bold text-rose-400";
+            }
+
+            document.getElementById('exam-score-val').innerText = `${correctCount} / ${session.questions.length}`;
+            document.getElementById('exam-percent-val').innerText = `${percent}%`;
+
+            // Breakdown
+            const breakdown = document.getElementById('exam-breakdown-list');
+            breakdown.innerHTML = session.questions.map((q, i) => {
+                const userAns = session.answers[q.id] || "Unanswered";
+                const isRight = userAns === q.correct;
+
+                return `
+                    <div class="p-4 bg-slate-950 border rounded-xl space-y-1.5 ${isRight ? 'border-emerald-900/50' : 'border-rose-900/50'}">
+                        <div class="flex justify-between items-start text-xs">
+                            <span class="font-bold text-slate-300">Q${i + 1}. Week ${q.week} Source</span>
+                            <span class="px-2 py-0.5 rounded font-bold ${isRight ? 'bg-emerald-950 text-emerald-400' : 'bg-rose-950 text-rose-400'}">
+                                ${isRight ? 'Correct' : 'Incorrect'}
+                            </span>
+                        </div>
+                        <p class="text-xs text-slate-200">${q.q}</p>
+                        <div class="text-[11px] space-y-0.5 pt-1">
+                            <div class="${isRight ? 'text-emerald-400' : 'text-rose-400'}">Your Answer: ${userAns}</div>
+                            ${!isRight ? `<div class="text-emerald-400">Correct Answer: ${q.correct}</div>` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            lucide.createIcons();
+        }
+    </script>
+</body>
+</html>
